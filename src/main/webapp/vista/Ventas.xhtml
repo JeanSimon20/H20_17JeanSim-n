@@ -1,0 +1,130 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:f="http://java.sun.com/jsf/core"
+      xmlns:ui="http://java.sun.com/jsf/facelets"
+      xmlns:p="http://primefaces.org/ui"    
+      xmlns:fn="http://java.sun.com/jsp/jstl/functions">
+    <h:head>
+        <title>Mantenimiento Area</title>
+        <f:event listener="#{tipo_ProductoC.listar()}" type="preRenderView" />
+    </h:head>
+    <h:body>
+<!--                <ui:include src="../../index.xhtml"/>-->
+        <p:growl id="msj" showDetail="true" sticky="true" >                
+            <p:autoUpdate/>
+        </p:growl> 
+        <h:form id="tablaAre">
+            <p:panelGrid columns="2">  
+
+
+                <p:outputLabel value="Nombre de Cliente" />
+                <p:selectOneMenu value="#{ventasC.ventaDTO.IDCLI}"
+                                 filter="true" filterMatchMode="contains" required="true" style="width: 200px" requiredMessage="Falta Proovedor" >
+                    <f:selectItem  noSelectionOption="true" itemLabel="Seleccione" itemValue="#{null}" />
+                    <f:selectItems value="#{clienteC.clientes}" var="marcas" itemValue="#{marcas.IDCLI}"
+                                   itemLabel="#{marcas.NOMCLI}"/>                                  
+                </p:selectOneMenu>
+
+                <p:outputLabel value="Nombre de Empleado" />
+                <p:selectOneMenu value="#{ventasC.ventaDTO.IDEMP}"
+                                 filter="true" filterMatchMode="contains" required="true" style="width: 200px" requiredMessage="Falta Proovedor" >
+                    <f:selectItem  noSelectionOption="true" itemLabel="Seleccione" itemValue="#{null}" />
+                    <f:selectItems value="#{empleadoC.empleados}" var="ga" itemValue="#{ga.IDEMP}"
+                                   itemLabel="#{ga.NOMAPE}"/>                                  
+                </p:selectOneMenu>
+
+                <p:outputLabel value="Descripcion de Pizza que pide"/>
+                <p:inputText value="#{ventasC.ventaDTO.DESVEN}" maxlength="100" required="true" requiredMessage="Digitar la Razon Social"/>  
+              
+                <p:outputLabel value="Precio"/>
+                <p:inputText value="#{ventasC.ventaDTO.PREVEN}" maxlength="100" required="true" requiredMessage="Digitar la Razon Social"/>  
+            </p:panelGrid>
+            <p:commandButton value="Registrar" action="#{ventasC.registrar()}" update="area:tablaAre"/>
+        </h:form>
+
+        <h:form id="area">
+
+
+            <p:dataTable id="tablaAre" var="car" value="#{ventasC.listVentaDTO}"
+                         paginatorTemplate="{CurrentPageReport}  {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {Exporters}"
+                         paginator="true" rows="10" style="margin-bottom:20px">
+
+                <p:column headerText="Cliente">
+                    <h:outputText value="#{car.cliente}" />
+                </p:column>   
+                <p:column headerText="Vendedor">
+                    <h:outputText value="#{car.empleado}" />
+                </p:column>  
+
+                <p:column headerText="Descripcion de la Pizza">
+                    <h:outputText value="#{car.DESVEN}" />
+                </p:column>  
+
+                <p:column headerText="Precio">
+                    <h:outputText value="#{car.PREVEN}" />
+                </p:column>  
+                <p:column headerText="Modificar">
+                    <p:commandButton icon="ui-icon-build" 
+                                     oncomplete="PF('wdlgDatos').show();" 
+                                     update=":frm">
+                        <f:setPropertyActionListener value="#{car}" target="#{ventasC.ventaDTO}" />    
+                    </p:commandButton>   
+                </p:column> 
+
+                <p:column headerText="Eliminar">
+                    <p:commandButton icon="ui-icon-circle-close" actionListener="#{ventasC.modificarEstado(car)}" update="tablaAre">                           
+                        <p:confirm header="Confirmación" message="¿Deseas Inactivar?" icon="ui-icon-alert"/>
+                        <p:tooltip trackMouse="true"/>
+                    </p:commandButton>
+                    <p:confirmDialog global="true" showEffect="fade" hideEffect="fade">
+                        <p:commandButton value="Si" type="button" styleClass="ui-confirmdialog-yes" icon="ui-icon-check"/>
+                        <p:commandButton value="No" type="button" styleClass="ui-confirmdialog-no" icon="ui-icon-close"/>
+                    </p:confirmDialog>
+                </p:column>
+                <f:facet name="footer">
+                    EN TOTAL HAY #{fn:length(ventasC.listVentaDTO)} REGISTROS.
+                </f:facet>  
+            </p:dataTable>
+        </h:form>
+        <p:dialog header="Datos de Areas" widgetVar="wdlgDatos" id="dlgdatos">
+            <h:form id="frm">
+                <p:panelGrid columns="6">                    
+                    <p:outputLabel value="Nombre de Cliente" />
+                    <p:selectOneMenu value="#{ventasC.seleccionado.IDCLI}"
+                                     filter="true" filterMatchMode="contains" required="true" style="width: 200px" requiredMessage="Falta Proovedor" >
+                        <f:selectItem  noSelectionOption="true" itemLabel="Seleccione" itemValue="#{null}" />
+                        <f:selectItems value="#{clienteC.clientes}" var="marcas" itemValue="#{marcas.IDCLI}"
+                                       itemLabel="#{marcas.NOMCLI}"/>                                  
+                    </p:selectOneMenu>
+
+                    <p:outputLabel value="Nombre de Empleado" />
+                    <p:selectOneMenu value="#{ventasC.seleccionado.IDEMP}"
+                                     filter="true" filterMatchMode="contains" required="true" style="width: 200px" requiredMessage="Falta Proovedor" >
+                        <f:selectItem  noSelectionOption="true" itemLabel="Seleccione" itemValue="#{null}" />
+                        <f:selectItems value="#{empleadoC.empleados}" var="ga" itemValue="#{ga.IDEMP}"
+                                       itemLabel="#{ga.NOMAPE}"/>                                  
+                    </p:selectOneMenu>
+
+                    <p:outputLabel value="Descripcion de Pizza que pide"/>
+                    <p:inputText value="#{ventasC.seleccionado.DESVEN}" maxlength="100" required="true" requiredMessage="Digitar la Razon Social"/>  
+                  
+                    <p:outputLabel value="Precio"/>
+                    <p:inputText value="#{ventasC.seleccionado.PREVEN}" maxlength="100" required="true" requiredMessage="Digitar la Razon Social"/>  
+                </p:panelGrid>
+                <p:commandButton value="Cancelar" immediate="true" />
+                <p:commandButton value="Modificar" actionListener="#{tipo_ProductoC.modificar()}"
+                                 update="area:tablaAre" oncomplete="PF('wdlgDatos').hide();" >
+                    <p:confirm header="Confirmación" message="¿Deseas Modificar?" icon="ui-icon-alert"/>
+                    <p:tooltip trackMouse="true"/>
+                </p:commandButton>
+                <p:confirmDialog global="true" showEffect="fade" hideEffect="fade">
+                    <p:commandButton value="Si" type="button" styleClass="ui-confirmdialog-yes" icon="ui-icon-check"/>
+                    <p:commandButton value="No" type="button" styleClass="ui-confirmdialog-no" icon="ui-icon-close"/>
+                </p:confirmDialog>
+            </h:form>
+        </p:dialog>
+
+    </h:body>
+</html>
+
