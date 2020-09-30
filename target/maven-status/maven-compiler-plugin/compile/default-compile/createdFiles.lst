@@ -1,5 +1,0 @@
-Controller\EmpleadoC.class
-dao\EmpleadoImpl.class
-model\Empleado.class
-dao\Conexion.class
-dao\ICRUD.class
